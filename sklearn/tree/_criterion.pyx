@@ -302,9 +302,10 @@ cdef class ClassificationCriterion(Criterion):
         self.sum_stride = sum_stride
 
         cdef SIZE_t n_elements = n_outputs * sum_stride
-        self.sum_total = <double*> calloc(n_elements, sizeof(double))
-        self.sum_left = <double*> calloc(n_elements, sizeof(double))
-        self.sum_right = <double*> calloc(n_elements, sizeof(double))
+
+        safe_realloc(&self.sum_total, n_elements)
+        safe_realloc(&self.sum_left, n_elements)
+        safe_realloc(&self.sum_right, n_elements)
 
         if (self.sum_total == NULL or 
                 self.sum_left == NULL or
@@ -312,8 +313,9 @@ cdef class ClassificationCriterion(Criterion):
             raise MemoryError()
 
         if allow_missing:
-            self.sum_missing = <double*> calloc(n_elements, sizeof(double))
-            self.sum_available = <double*> calloc(n_elements, sizeof(double))
+            safe_realloc(&self.sum_missing, n_elements)
+            safe_realloc(&self.sum_available, n_elements)
+
             if self.sum_missing == NULL or self.sum_available == NULL:
                 raise MemoryError()
 
