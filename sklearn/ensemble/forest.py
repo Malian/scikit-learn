@@ -143,7 +143,8 @@ class BaseForest(six.with_metaclass(ABCMeta, BaseEnsemble,
                  verbose=0,
                  warm_start=False,
                  class_weight=None,
-                 missing_values=None):
+                 missing_values=None,
+                 allow_missing=False):
         super(BaseForest, self).__init__(
             base_estimator=base_estimator,
             n_estimators=n_estimators,
@@ -156,7 +157,7 @@ class BaseForest(six.with_metaclass(ABCMeta, BaseEnsemble,
         self.verbose = verbose
         self.warm_start = warm_start
         self.class_weight = class_weight
-        self.allow_missing = missing_values is not None
+        self.allow_missing = allow_missing
 
         # If missing values is int/None
         self._allow_nan = False
@@ -261,7 +262,7 @@ class BaseForest(six.with_metaclass(ABCMeta, BaseEnsemble,
             elif not isinstance(self.missing_values, int):
                 raise ValueError("missing_values should be 'NaN' or int. "
                                  "Got %s" % self.missing_values)
-        
+
         # Validate or convert input data
         X = check_array(X, accept_sparse="csc", dtype=DTYPE,
                         allow_nan = self._allow_nan)
@@ -430,7 +431,8 @@ class ForestClassifier(six.with_metaclass(ABCMeta, BaseForest,
                  verbose=0,
                  warm_start=False,
                  class_weight=None,
-                 missing_values=None):
+                 missing_values=None,
+                 allow_missing=False):
 
         super(ForestClassifier, self).__init__(
             base_estimator,
@@ -443,7 +445,8 @@ class ForestClassifier(six.with_metaclass(ABCMeta, BaseForest,
             verbose=verbose,
             warm_start=warm_start,
             class_weight=class_weight,
-            missing_values=missing_values)
+            missing_values=missing_values,
+            allow_missing=False)
 
     def _set_oob_score(self, X, y, missing_mask=None):
         """Compute out-of-bag score"""
@@ -690,7 +693,8 @@ class ForestRegressor(six.with_metaclass(ABCMeta, BaseForest, RegressorMixin)):
                  random_state=None,
                  verbose=0,
                  warm_start=False,
-                 missing_values=None):
+                 missing_values=None,
+                 allow_missing=False):
         super(ForestRegressor, self).__init__(
             base_estimator,
             n_estimators=n_estimators,
@@ -701,7 +705,8 @@ class ForestRegressor(six.with_metaclass(ABCMeta, BaseForest, RegressorMixin)):
             random_state=random_state,
             verbose=verbose,
             warm_start=warm_start,
-            missing_values=missing_values)
+            missing_values=missing_values,
+            allow_missing=False)
 
     def predict(self, X):
         """Predict regression target for X.
@@ -962,7 +967,8 @@ class RandomForestClassifier(ForestClassifier):
                  verbose=0,
                  warm_start=False,
                  class_weight=None,
-                 missing_values=None):
+                 missing_values=None,
+                 allow_missing=False):
         super(RandomForestClassifier, self).__init__(
             base_estimator=DecisionTreeClassifier(),
             n_estimators=n_estimators,
@@ -977,7 +983,8 @@ class RandomForestClassifier(ForestClassifier):
             verbose=verbose,
             warm_start=warm_start,
             class_weight=class_weight,
-            missing_values=missing_values)
+            missing_values=missing_values,
+            allow_missing=False)
 
         self.criterion = criterion
         self.max_depth = max_depth
@@ -1137,7 +1144,8 @@ class RandomForestRegressor(ForestRegressor):
                  n_jobs=1,
                  random_state=None,
                  verbose=0,
-                 warm_start=False):
+                 warm_start=False,
+                 allow_missing=False):
         super(RandomForestRegressor, self).__init__(
             base_estimator=DecisionTreeRegressor(),
             n_estimators=n_estimators,
@@ -1150,7 +1158,8 @@ class RandomForestRegressor(ForestRegressor):
             n_jobs=n_jobs,
             random_state=random_state,
             verbose=verbose,
-            warm_start=warm_start)
+            warm_start=warm_start,
+            allow_missing=False)
 
         self.criterion = criterion
         self.max_depth = max_depth
